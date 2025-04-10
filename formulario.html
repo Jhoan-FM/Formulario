@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Registro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        .page { display: none; }
+        .active { display: block; }
+        h2 { color: #333; }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="pagina1" class="page active">
+            <h2>Datos Personales</h2>
+            <input type="text" id="nombre" placeholder="Nombre">
+            <input type="number" id="edad" placeholder="Edad">
+            <button onclick="siguiente(2)">Siguiente</button>
+        </div>
+        
+        <div id="pagina2" class="page">
+            <h2>Familiares</h2>
+            <input type="text" id="familiar_nombre" placeholder="Nombre">
+            <input type="text" id="familiar_parentesco" placeholder="Parentesco">
+            <input type="number" id="familiar_edad" placeholder="Edad">
+            <button onclick="agregarFamiliar()">Agregar</button>
+            <ul id="lista_familiares"></ul>
+            <button onclick="siguiente(3)">Siguiente</button>
+        </div>
+        
+        <div id="pagina3" class="page">
+            <h2>Condiciones Pre-Existentes</h2>
+            <input type="text" id="enfermedad" placeholder="Enfermedad">
+            <input type="number" id="tiempo" placeholder="Años con la enfermedad">
+            <button onclick="agregarCondicion()">Agregar</button>
+            <ul id="lista_condiciones"></ul>
+            <button onclick="siguiente(4)">Siguiente</button>
+        </div>
+        
+        <div id="pagina4" class="page">
+            <h2>Internamientos Realizados</h2>
+            <input type="date" id="fecha">
+            <input type="text" id="centro" placeholder="Centro Médico">
+            <input type="text" id="diagnostico" placeholder="Diagnóstico">
+            <button onclick="agregarInternamiento()">Agregar</button>
+            <ul id="lista_internamientos"></ul>
+            <button onclick="siguiente(5)">Finalizar</button>
+        </div>
+        
+        <div id="pagina5" class="page">
+            <h2>Resumen de Datos</h2>
+            <pre id="resultado"></pre>
+            <button onclick="reiniciar()">Reiniciar</button>
+        </div>
+    </div>
+
+    <script>
+        let datos = { personales: {}, familiares: [], condiciones: [], internamientos: [] };
+        
+        function siguiente(pagina) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('pagina' + pagina).classList.add('active');
+            if (pagina === 5) {
+                document.getElementById('resultado').textContent = JSON.stringify(datos, null, 2);
+            }
+        }
+        
+        function agregarFamiliar() {
+            let nombre = document.getElementById('familiar_nombre').value;
+            let parentesco = document.getElementById('familiar_parentesco').value;
+            let edad = document.getElementById('familiar_edad').value;
+            if (nombre && parentesco && edad) {
+                datos.familiares.push({ nombre, parentesco, edad });
+                actualizarLista('lista_familiares', datos.familiares);
+            }
+        }
+        
+        function agregarCondicion() {
+            let enfermedad = document.getElementById('enfermedad').value;
+            let tiempo = document.getElementById('tiempo').value;
+            if (enfermedad && tiempo) {
+                datos.condiciones.push({ enfermedad, tiempo });
+                actualizarLista('lista_condiciones', datos.condiciones);
+            }
+        }
+        
+        function agregarInternamiento() {
+            let fecha = document.getElementById('fecha').value;
+            let centro = document.getElementById('centro').value;
+            let diagnostico = document.getElementById('diagnostico').value;
+            if (fecha && centro && diagnostico) {
+                datos.internamientos.push({ fecha, centro, diagnostico });
+                actualizarLista('lista_internamientos', datos.internamientos);
+            }
+        }
+        
+        function actualizarLista(id, lista) {
+            let ul = document.getElementById(id);
+            ul.innerHTML = '';
+            lista.forEach(item => {
+                let li = document.createElement('li');
+                li.textContent = Object.values(item).join(' - ');
+                ul.appendChild(li);
+            });
+        }
+        
+        function reiniciar() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>
